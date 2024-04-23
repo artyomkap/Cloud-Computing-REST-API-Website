@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    background-color: #FBFF3F;
+    padding: 20px;
+    text-align: center;
+    flex: 0 1 auto;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    margin: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+    opacity: 0.9;
+}
+
+button:hover {
+    opacity: 1;
+}
+
+.container {
+    text-align: center;
+    margin-top: 20px;
+    flex: 1 0 auto;
+}
+
+.modal-content {
+    width: 300px;
+    margin: 0 auto;
+}
+
+label {
+    margin-top: 10px;
+    display: block;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    box-sizing: border-box;
+}
+
+.clearfix {
+    overflow: auto;
+}
+
+.cancelbtn {
+    float: left;
+}
+
+.signupbtn {
+    float: right;
+}
+
+</style>
+<header class="header">
+    <h1>Travel Buddy</h1>
+</header>
+<body>
+
+    <div>
+        <form class="modal-content" action="">
+            <div class="container">
+                <h1>Log in</h1>
+                <p>Please fill in this form to Login.</p>
+                <hr>
+
+                <label for="username"><b>Enter Username</b></label>
+                <input type="text" placeholder="Enter Username" name="username" id="username" required>
+
+                <label for="pswd"><b>Enter password</b></label>
+                <input type="Password" placeholder="Enter Password" name="pswd" id="pswd" required>
+
+                <div class="clearfix">
+                    <button type="button" onclick="window.location.href='index.html'" class="cancelbtn">Cancel</button>
+                    <button type="button" class="signupbtn" onclick="submitForm()">Log in</button>
+                </div>
+
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function submitForm() {
+            var userName = document.getElementById('username').value;
+            var password = document.getElementById('pswd').value;
+
+            var data = {
+                "userName": userName,
+                "password": password
+            };
+
+            fetch('http://localhost:8080/REST_API_Database_DB/webresources/Login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(result => {
+                var userIDMatch = result.match(/User ID: (\w+)/);
+                var userNameMatch = result.match(/Full Name: (.+)/);
+
+                if (userIDMatch && userIDMatch.length > 1 && userNameMatch && userNameMatch.length > 1) {
+                    var userID = userIDMatch[1];
+                    var fullName = userNameMatch[1];
+
+                    localStorage.setItem('userID', userID);
+                    localStorage.setItem('Full_Name', fullName);
+
+                    alert('Successful login!');
+                    window.location.href = 'TravelsCatalog.html';
+                } else {                    
+                    console.error('Failed to extract User ID or Full Name');
+                    alert('Incorrect Login and Password');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Incorrect Login and Password');
+            });
+        }
+    </script>
+</body>
+</html>

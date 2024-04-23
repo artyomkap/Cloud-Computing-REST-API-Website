@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #FBFF3F;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .logo img {
+            width: 96px;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .navigation a {
+            text-decoration: none;
+            color: black;
+            margin-right: 50px;
+            font-weight: bold;
+        }
+
+        .travels {
+            font-size: 48px;
+            font-weight: bold;
+            margin-top: 50px;
+            margin-left: 20px;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .card {
+            flex-direction: column;
+            height: 100%;
+            width: 300px;
+            margin: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .weather {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .join-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: auto; /* Push the button to the bottom */
+            width: 100%;
+        }
+    </style>
+    <title>Travel Buddy</title>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">TB 
+            Travel Buddy
+        </div>
+        <div class="navigation">
+            <a href='TravelsCatalog.html'>ALL TRIPS</a>
+            <a href="MyRequests.html">My Requests</a>
+            <a href="MyTrips.html">My Trips</a>
+            <a href="AddTravel.html">+ New Trip</a>
+            <a href="profile.html" id="Profile"></a>
+            <a href="index.html">Log out</a>
+        </div>
+    </header>
+    <h1 class="travels">List of Trips:</h1>
+    <div class="card-container" id="tripContainer">
+    </div>
+
+    <script>
+        async function fetchWeatherData(city) {
+            try {
+                const response = await fetch(`http://localhost:8080/REST_API_Weather/webresources/Weather?city=${city}`);
+                const weatherData = await response.json();
+
+                return {
+                    temperature: weatherData.main.temp,
+                    weather: weatherData.weather[0].main
+                };
+            } catch (error) {
+                console.error("Error fetching weather data:", error);
+                return {
+                    temperature: "N/A",
+                    weather: "N/A"
+                };
+            }
+        }        
+
+        function handleJoinButtonClick(event) {
+            const tripId = event.target.getAttribute("data-trip-id");
+            const userId = localStorage.getItem("userID");
+
+            console.log("userID:", userId);
+            console.log("tripId:", tripId);
+
+            if (userId && tripId) {
+                const requestData = {
+                    User_Id: userId,
+                    City_Id: tripId                    
+                };
+
+
+                fetch("http://localhost:8080/REST_API_Database_DB/webresources/JoinToTrip", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(requestData)
+                })
+                .then(response => response.text())
+                .then(data => {
+                    console.log("Server response text:", data);
+                    alert('Successfully request join to trip!');
+                    location.reload();
+                })
+                .catch(error => {
+                    console.error("Error during join request:", error);
+                });
+            } else {
+                console.error("User ID or Trip ID is missing.");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            try {
+                const response = await fetch("http://localhost:8080/REST_API_Database_DB/webresources/GetAllTrips");
+                const trips = await response.json();
+                const cardContainer = document.getElementById("tripContainer");
+
+                for (const trip of trips) {
+                    if (trip.trip_status === "no_guests") {
+                        const card = document.createElement("div");
+                        card.className = "card";
+
+                        const img = document.createElement("img");
+                        img.src = trip.city_picture;
+                        img.alt = trip.city;
+                        card.appendChild(img);
+
+                        const weatherData = await fetchWeatherData(trip.city);
+                        const weatherDiv = document.createElement("div");
+                        weatherDiv.className = "weather";
+                        weatherDiv.innerHTML = `<div>${weatherData.weather}</div><div>${Math.round(weatherData.temperature - 273.15)}°C</div>`;
+                        card.appendChild(weatherDiv);
+
+                        const userResponse = await fetch(`http://localhost:8080/REST_API_Database_DB/webresources/SelectUser?user_id=${trip.user_id}`);
+                        const userData = await userResponse.json();
+
+                        if (Array.isArray(userData) && userData.length > 0) {
+                            const user = userData[0];
+                            const description = document.createElement("div");
+                            description.className = "description";
+                            description.innerHTML = `<h2>${trip.city}</h2><p>${trip.description}</p><p>Creator: ${user.full_name}</p>`;
+                            card.appendChild(description);
+
+                            const joinBtn = document.createElement("button");
+                            joinBtn.className = "join-btn";
+                            joinBtn.innerText = "Join";
+                            joinBtn.setAttribute("data-trip-id", trip.trip_id);
+                            joinBtn.addEventListener("click", handleJoinButtonClick);
+                            description.appendChild(joinBtn);
+
+                            cardContainer.appendChild(card);
+                        } else {
+                            console.error("User data not found for user_id:", trip.user_id);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching trips:", error);
+            }
+
+            const welcomeMessage = document.getElementById("Profile");
+            const fullName = localStorage.getItem("Full_Name");
+
+            if (fullName) {
+                welcomeMessage.textContent = `Welcome, ${fullName}!`;
+            }
+        });
+    </script>
+</body>
+</html>

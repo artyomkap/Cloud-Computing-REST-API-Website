@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #FBFF3F;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .logo img {
+            width: 96px;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .navigation a {
+            text-decoration: none;
+            color: black;
+            margin-right: 50px;
+            font-weight: bold;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0 15px;
+            box-sizing: border-box;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            margin: 50px auto;
+            width: 300px;
+            text-align: center;
+            margin-top: 20px;
+            flex: 1 0 auto;
+            
+        }
+
+        .user-info div {
+            width: 100%; 
+            margin-bottom: 30px; 
+        }
+
+        .user-info button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <div class="logo">TB 
+            Travel Buddy
+        </div>
+        <div class="navigation">
+            <a href="TravelsCatalog.html">All Trips</a>
+            <a href="MyTrips.html">My Trips</a>
+            <a href="AddTravel.html">+ New Trip</a>
+        </div>
+    </header>
+
+    <div class="user-info">
+        <div>
+            <label for="full_name"><b>Full Name:</b></label>
+            <input type="text" id="full_name_input" name="full_name">
+            <button onclick="UpdateFullName()">Update</button>
+        </div>
+
+        <div>
+            <label for="user_name"><b>User Name:</b></label>
+            <input type="text" id="user_name_input" name="user_name">
+            <button onclick="UpdateUserName()">Update</button>
+        </div>
+
+        <div>
+            <label for="password"><b>Password:</b></label>
+            <input type="text" id="password_input" name="password">
+            <button onclick="UpdatePassword()">Update</button>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const userId = localStorage.getItem("userID");
+
+            if (userId) {
+                fetch(`http://localhost:8080/REST_API_Database_DB/webresources/SelectUser?user_id=${userId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Server response:", data);
+
+                        if (Array.isArray(data) && data.length > 0) {
+                            const user = data[0];
+
+                            if ("full_name" in user && "user_name" in user && "password" in user) {
+                                document.getElementById("full_name_input").value = user.full_name;
+                                document.getElementById("user_name_input").value = user.user_name;
+                                document.getElementById("password_input").value = user.password;
+                            } else {
+                                console.error("Invalid user data in the response.");
+                            }
+                        } else {
+                            console.error("Empty or invalid response from the server.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching user data:", error);
+                    });
+            } else {
+                console.error("User ID is missing in localStorage.");
+            }
+        });
+
+        function UpdateFullName() {
+            const userId = localStorage.getItem("userID");
+            const fullName = document.getElementById("full_name_input").value;
+
+            if (userId) {
+                fetch("http://localhost:8080/REST_API_Database_DB/webresources/UpdateFullName", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        full_name: fullName
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log("Server response:", data);
+                    })
+                    .catch(error => {
+                        console.error("Error updating full name:", error);
+                    });
+            } else {
+                console.error("User ID is missing in localStorage.");
+            }
+        }
+
+        function UpdateUserName() {
+            const userId = localStorage.getItem("userID");
+            const UserName = document.getElementById("user_name_input").value;
+
+            if (userId) {
+                fetch("http://localhost:8080/REST_API_Database_DB/webresources/UpdateUserName", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        user_name: UserName
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log("Server response:", data);
+                    })
+                    .catch(error => {
+                        console.error("Error updating user name:", error);
+                    });
+            } else {
+                console.error("User ID is missing in localStorage.");
+            }
+        }
+
+        function UpdatePassword() {
+            const userId = localStorage.getItem("userID");
+            const password = document.getElementById("password_input").value;
+
+            if (userId) {
+                fetch("http://localhost:8080/REST_API_Database_DB/webresources/UpdatePassword", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        password: password
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! Status: ${response.status}`);
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log("Server response:", data);
+                    })
+                    .catch(error => {
+                        console.error("Error updating user name:", error);
+                    });
+            } else {
+                console.error("User ID is missing in localStorage.");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    background-color: #FBFF3F;
+    padding: 20px;
+    text-align: center;
+    flex: 0 1 auto;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    margin: 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100px;
+    opacity: 0.9;
+}
+
+button:hover {
+    opacity: 1;
+}
+
+.container {
+    text-align: center;
+    margin-top: 20px;
+    flex: 1 0 auto;
+}
+
+.modal-content {
+    width: 300px;
+    margin: 0 auto;
+}
+
+label {
+    margin-top: 10px;
+    display: block;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0 15px;
+    box-sizing: border-box;
+}
+
+.clearfix {
+    overflow: auto;
+}
+
+.cancelbtn {
+    float: left;
+}
+
+.signupbtn {
+    float: right;
+}
+
+</style>
+<header class="header">
+    <h1>Travel Buddy</h1>
+</header>
+<body>
+
+    <div>
+        <form class="modal-content" action="">
+            <div class="container">
+                <h1>Create new Trip</h1>
+                <p>Please fill in this form to create a new Trip</p>
+                <hr>
+
+                <label for="city"><b>City</b></label>
+                <input type="text" placeholder="Enter City" name="city" id="city" required>
+
+                <label for="description"><b>Trip Description</b></label>
+                <input type="text" placeholder="Enter Description" name="description" id="description" required>
+                
+
+                <div class="clearfix">
+                    <button type="button" onclick="window.location.href='TravelsCatalog.html'" class="cancelbtn">Cancel</button>
+                    <button type="button" class="signupbtn" onclick="submitForm()">Add new Trip</button>
+                </div>               
+
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function submitForm() {
+            var City = document.getElementById('city').value;
+            var description = document.getElementById('description').value;            
+            var userID = localStorage.getItem('userID');
+            
+            if (!City || !description) {
+                alert("Please fill in all fields");
+                return;
+            }
+            
+            var data = {
+                "User_Id": userID,
+                "City": City,
+                "Description": description
+            };
+
+            fetch('http://localhost:8080/REST_API_Database_DB/webresources/AddTrip', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.text())
+                .then(result => {
+                    console.log(result);
+                    alert('Trip Sucessfully Created');
+                    window.location.href = 'TravelsCatalog.html';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error with creating a trip: ', error);
+                });
+        }
+    </script>
+
+</body>
+</html>

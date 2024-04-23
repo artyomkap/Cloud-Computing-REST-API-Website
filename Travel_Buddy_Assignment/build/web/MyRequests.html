@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #FBFF3F;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 36px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .logo img {
+            width: 96px;
+        }
+
+        .navigation {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+        }
+
+        .navigation a {
+            text-decoration: none;
+            color: black;
+            margin-right: 50px;
+            font-weight: bold;
+        }
+
+       
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        .card {
+            width: 400px;
+            margin: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .card img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .weather {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .join-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .request {
+            width: 400px;
+            margin: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        .h1_card {
+            margin: 20px;
+        }
+        
+        
+        .requests-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .travels-column {
+            flex: 0 0 48%; 
+        }
+
+        .requests-column {
+            flex: 0 0 48%; 
+        }
+        
+        .delete-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px;
+            font-weight: Bold;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .accept-btn {
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px;
+            font-weight: Bold;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 80px;
+        }
+    </style>
+    <title>Travel Buddy</title>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">TB 
+            Travel Buddy
+        </div>
+        <div class="navigation">
+            <a href='TravelsCatalog.html'>ALL TRIPS</a>
+            <a href="MyRequests.html">My Requests</a>
+            <a href="MyTrips.html">My Trips</a>
+            <a href="AddTravel.html">+ New Trip</a>
+            <a href="profile.html" id="Profile"></a>
+            <a href="index.html">Log out</a>
+        </div>               
+    </header>
+    
+    <div class="travels-container">
+        <div class="requests-column" id="requestsContainer">
+            <h1 class="h1_card">My requests:</h1>
+        </div>
+    </div>
+    
+    <script>
+        const welcomeMessage = document.getElementById("Profile");
+            const fullName = localStorage.getItem("Full_Name");
+
+            if (fullName) {
+                welcomeMessage.textContent = `Welcome, ${fullName}!`;
+            }
+            
+        document.addEventListener("DOMContentLoaded", async function () {
+            const userId = localStorage.getItem("userID");
+
+            if (userId) {
+                try {
+                    const response = await fetch(`http://localhost:8080/REST_API_Database_DB/webresources/GetRequests?user_id=${userId}`);
+                    const requestData = await response.json();
+                    const requestsContainer = document.getElementById("requestsContainer");
+
+                    for (const request of requestData) {
+                        const card = await createRequestCard(request);
+                        requestsContainer.appendChild(card);
+                    }
+                } catch (error) {
+                    console.error("Error fetching data:", error);
+                }
+            } else {
+                console.error("User ID is missing in localStorage.");
+            }
+        });
+        
+        async function createRequestCard(request) {
+            const card = document.createElement("div");
+            card.className = "request";
+
+            try {                
+                const tripResponse = await fetch(`http://localhost:8080/REST_API_Database_DB/webresources/GetTripsById?trip_id=${request.trip_id}`);
+                const tripData = await tripResponse.json();                
+                for (const trip of tripData) {
+                    if (tripData) {                    
+                    const description = document.createElement("div");
+                    description.className = "description";
+                    description.innerHTML = `<h2>${trip.city}</h2><p>Status: ${request.status}</p>`;
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.className = "delete-btn";
+                    deleteBtn.innerText = "Delete";
+                    deleteBtn.setAttribute("data-request-id", request.request_id);
+                    deleteBtn.addEventListener("click", () => deleteTrip(request.request_id, trip.trip_id));
+                    description.appendChild(deleteBtn);
+
+                    card.appendChild(description);
+                } else {
+                    console.error("Trip data not found or incomplete for trip_id:", request.trip_id);
+                    card.innerHTML = `<p>Error: Trip data not found or incomplete</p>`;
+                }
+                }
+                
+            } catch (error) {
+                console.error("Error fetching trip data:", error);
+                card.innerHTML = `<p>Error fetching trip data</p>`;
+            }
+
+            console.log("Generated card:", card);
+            return card;
+        }
+
+        async function deleteTrip(request_id, trip_id) {
+            const url = `http://localhost:8080/REST_API_Database_DB/webresources/DeleteRequest?request_id=${request_id}&trip_id=${trip_id}`;
+            
+            try {
+                const response = await fetch(url, { method: 'GET' });
+                const result = await response.text();
+
+                if (result === "Request was deleted, but trip status was not updated due to an error!") {
+                    alert(result);
+                } else {
+                    alert('Request was deleted!');
+                    location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error with the request: ' + error.message);
+            }
+        }
+            
+        
+        
+    </script>
+</body>
+</html>

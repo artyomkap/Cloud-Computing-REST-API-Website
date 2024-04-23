@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/UpdatePasswordResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/GetAllTripsResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/external/GetUser.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/DeleteTripResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/external/UpdateFullNameService.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/AddTripResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/ApplicationConfig.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/GetTravelsByIdResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/external/LoginService.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/AcceptRequestResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/DeleteRequestResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/GetRequestsResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/UpdateFullNameResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/LoginResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/SelectUserResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/GetTripsByIdResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/JoinToTripResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/external/GetTripsById.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/RegistrationResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/UpdateUserNameResource.java</file>
+            <file>file:/C:/Users/Артем/Documents/NetBeansProjects/REST%20API%20Database_DB/src/java/services/CancelRequestResource.java</file>
+        </group>
+    </open-files>
+</project-private>
